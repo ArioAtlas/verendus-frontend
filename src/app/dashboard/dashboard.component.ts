@@ -12,14 +12,11 @@ export class DashboardComponent implements OnInit {
   public datasets: any;
   public data: any;
   public myChartData: any;
-  public clicked: boolean = true;
-  public clicked1: boolean = false;
-  public clicked2: boolean = false;
 
   constructor() {}
 
-  ngOnInit() {
-    let gradientBarChartConfiguration: any = {
+  ngOnInit(): void {
+    const gradientBarChartConfiguration: any = {
       maintainAspectRatio: false,
       legend: {
         display: false,
@@ -72,13 +69,14 @@ export class DashboardComponent implements OnInit {
     this.canvas = document.getElementById('chartLineRed');
     this.ctx = this.canvas.getContext('2d');
 
-    let gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+    const gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
+    // green colors
     gradientStroke.addColorStop(1, 'rgba(66,134,121,0.15)');
-    gradientStroke.addColorStop(0.4, 'rgba(66,134,121,0.0)'); //green colors
-    gradientStroke.addColorStop(0, 'rgba(66,134,121,0)'); //green colors
+    gradientStroke.addColorStop(0.4, 'rgba(66,134,121,0.0)');
+    gradientStroke.addColorStop(0, 'rgba(66,134,121,0)');
 
-    let myChart = new Chart(this.ctx, {
+    const myChart = new Chart(this.ctx, {
       type: 'bar',
       data: {
         labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
@@ -99,7 +97,7 @@ export class DashboardComponent implements OnInit {
       options: gradientBarChartConfiguration,
     });
   }
-  public updateOptions() {
+  public updateOptions(): void {
     this.myChartData.data.datasets[0].data = this.data;
     this.myChartData.update();
   }
