@@ -1,0 +1,30 @@
+<div class="navbar navbar-expand-lg">
+  <div class="expand">
+    <div class="d-md-block d-lg-none">
+      <a class="nav-item" href="/dashboard">Dashboard</a>
+      <a class="nav-item" href="/api-docs">API Docs</a>
+      <a class="nav-item" href="/docs">Documents</a>
+    </div>
+  </div>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <input
+      class="form-control"
+      id="inlineFormInputGroup"
+      placeholder="SEARCH"
+      type="text"
+    />
+
+    <button
+      aria-label="Close"
+      class="close"
+      data-dismiss="modal"
+      type="button"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <i class="tim-icons icon-simple-remove"> </i>
+    </button>
+  </div>
+</ng-template>
