@@ -17,23 +17,21 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>JTEGG32M500015704</td>
-                  <td>20170103</td>
-                  <td>20181031</td>
-                  <td class="text-center">3 Days</td>
-                </tr>
-                <tr>
-                  <td>JTEGG32M500015704</td>
-                  <td>20170103</td>
-                  <td>20181031</td>
-                  <td class="text-center">3 Days</td>
-                </tr>
-                <tr>
-                  <td>JTEGG32M500015704</td>
-                  <td>20170103</td>
-                  <td>20181031</td>
-                  <td class="text-center">3 Days</td>
+                <tr *ngFor="let vehicle of vehicles">
+                  <td>{{ vehicle.chassisNumber }}</td>
+                  <td>
+                    {{
+                      formatDate(vehicle.inspection.latestInspectionDate, " / ")
+                    }}
+                  </td>
+                  <td>
+                    {{
+                      formatDate(vehicle.inspection.nextInspectionDate, " / ")
+                    }}
+                  </td>
+                  <td class="text-center">
+                    {{ remainingDays(vehicle.inspection.nextInspectionDate) }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -47,7 +45,7 @@
           <h5 class="card-category">Total Vehicle</h5>
           <h3 class="card-title">
             <i class="tim-icons icon-bus-front-12 text-success"> </i>
-            763,215
+            {{ totalNewVehicle }}
           </h3>
         </div>
         <div class="card-body">
@@ -59,13 +57,19 @@
           <h5 class="card-category">Vehicle Inspection File Parser</h5>
         </div>
         <div class="card-body">
-          <form>
+          <form [formGroup]="vehicleFileForm" (ngSubmit)="onSubmit()">
             <div class="row">
               <div class="col-sm-6 element-center">
-                <input type="file" class="form-control-file" id="reportFile" />
+                <input
+                  type="file"
+                  class="form-control-file"
+                  formControlName="reportFile"
+                  id="reportFile"
+                  (change)="onFileChange($event)"
+                />
               </div>
               <div class="col-sm-6 element-center">
-                <button type="button" class="btn btn-default">Submit</button>
+                <button type="submit" class="btn btn-default">Submit</button>
               </div>
             </div>
           </form>
@@ -75,18 +79,26 @@
   </div>
   <div class="row">
     <div class="col-12">
-      <div class="card card-chart">
+      <div class="card">
         <div class="card-header">
           <div class="row">
             <div class="col-sm-6 text-left">
               <h5 class="card-category">Vehicle Inspection Parser</h5>
-              <h2 class="card-title">Result</h2>
+              <h2 class="card-title" *ngIf="updateLog.length">Result</h2>
             </div>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body result-body">
           <div class="chart-area">
-            <div class="table-responsive">
+            <h3 *ngIf="!updateLog.length">
+              Result will be shown here after submiting the vehicle inspection
+              file
+            </h3>
+            <h4 *ngIf="updateLog.length">
+              <strong>{{ addedVehicle }}</strong> vehicle has been added and
+              <strong>{{ updatedVehicle }}</strong> has been updated
+            </h4>
+            <div class="table-responsive" *ngIf="updateLog.length">
               <table class="table tablesorter" id="">
                 <thead class="text-primary">
                   <tr>
@@ -105,33 +117,70 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="text-center">TN14780</td>
-                    <td class="text-center">JTEGG32M500015704</td>
-                    <td class="text-center">2004</td>
-                    <td class="text-center">52750082004</td>
-                    <td class="text-center">20090127</td>
-                    <td class="text-center">1</td>
-                    <td class="text-center">00000000</td>
-                    <td class="text-center">SVART</td>
-                    <td class="text-center">20170103</td>
-                    <td class="text-center">20181031</td>
-                    <td class="text-center">20130628</td>
-                    <td class="text-center">1206</td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">TN14780</td>
-                    <td class="text-center">JTEGG32M500015704</td>
-                    <td class="text-center">2004</td>
-                    <td class="text-center">52750082004</td>
-                    <td class="text-center">20090127</td>
-                    <td class="text-center">1</td>
-                    <td class="text-center">00000000</td>
-                    <td class="text-center">SVART</td>
-                    <td class="text-center">20170103</td>
-                    <td class="text-center">20181031</td>
-                    <td class="text-center">20130628</td>
-                    <td class="text-center">1206</td>
+                  <tr
+                    *ngFor="let entery of updateLog"
+                    [class.green]="entery.isNew"
+                    [class.red]="entery.diff.length"
+                  >
+                    <td class="text-center">{{ entery.data.identity }}</td>
+                    <td class="text-center">{{ entery.data.chassisNumber }}</td>
+                    <td class="text-center">{{ entery.data.modelYear }}</td>
+                    <td class="text-center">
+                      {{ entery.data.typeApprovalNo }}
+                    </td>
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.registration.firstRegistration,
+                          "/"
+                        )
+                      }}
+                    </td>
+                    <td class="text-center">
+                      {{ entery.data.privatelyImported }}
+                    </td>
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.registration.dateOfDeregistration,
+                          "/"
+                        )
+                      }}
+                    </td>
+                    <td class="text-center">{{ entery.data.color }}</td>
+
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.inspection.latestInspectionDate,
+                          "/"
+                        )
+                      }}
+                    </td>
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.inspection.nextInspectionDate,
+                          "/"
+                        )
+                      }}
+                    </td>
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.registration.latestRegistration,
+                          "/"
+                        )
+                      }}
+                    </td>
+                    <td class="text-center">
+                      {{
+                        formatDate(
+                          entery.data.registration.monthlyRegistration,
+                          "/"
+                        )
+                      }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
