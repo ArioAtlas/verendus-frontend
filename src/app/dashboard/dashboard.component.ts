@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.vehicleFileForm.get('fileSource')?.value) {
       const formData = new FormData();
       formData.append(
@@ -115,7 +115,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onFileChange(event: any) {
+  onFileChange(event: any): void {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       this.vehicleFileForm.patchValue({
@@ -214,24 +214,18 @@ export class DashboardComponent implements OnInit {
   }
 
   hasOldValue(key: string, diff: VehicleDiffResult[]): string {
-    console.log(key, diff);
+    for (const iterator of diff) {
+      if (iterator.name === key) {
+        return iterator.oldValue;
+      }
 
-    // for (const iterator of diff) {
-    //   if (iterator.name === key) {
-    //     console.log(key);
-
-    //     return iterator.oldValue;
-    //   }
-
-    //   if (iterator.sub.length) {
-    //     const sub = this.hasOldValue(key, iterator.sub);
-    //     if (sub.length) {
-    //       console.log(sub);
-    //       return sub;
-    //     }
-    //   }
-    // }
-    // console.log('!!!!');
+      if (iterator.sub.length) {
+        const sub = this.hasOldValue(key, iterator.sub);
+        if (sub.length) {
+          return sub;
+        }
+      }
+    }
 
     return '';
   }
