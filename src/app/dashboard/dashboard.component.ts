@@ -160,6 +160,8 @@ export class DashboardComponent implements OnInit {
         const labels: string[] = [];
         const values: number[] = [];
 
+        data.sort((a,b)=>{return (a._id.month-b._id.month)*30+(a._id.day-b._id.day)})
+
         for (const record of data) {
           labels.push(`${record._id.day} / ${record._id.month}`);
           values.push(record.count);
