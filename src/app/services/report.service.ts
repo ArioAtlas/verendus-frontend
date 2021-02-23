@@ -13,6 +13,10 @@ export class ReportService {
       environment.apiUrl + '/report/new/in-days/' + days
     );
   }
+
+  getChassisByInspectionDates(): Observable<ChassisByInspectionDate[]> {
+    return this.http.get<ChassisByInspectionDate[]>(environment.apiUrl + '/report');
+  }
 }
 
 export interface NewVehicleByDay {
@@ -23,4 +27,14 @@ export interface NewVehicleByDay {
 export interface NewVehicleByDayID {
   day: number;
   month: number;
+}
+
+export interface ChassisByInspectionDate {
+  chassisNumber: string;
+  inspection: Inspection;
+}
+
+export interface Inspection {
+  latestInspectionDate: number;
+  nextInspectionDate: number;
 }

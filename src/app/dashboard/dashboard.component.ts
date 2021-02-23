@@ -6,7 +6,7 @@ import {
   VehicleUpdateLog,
   VehicleDiffResult,
 } from '../services/vehicle.service';
-import { NewVehicleByDay, ReportService } from '../services/report.service';
+import { ChassisByInspectionDate, NewVehicleByDay, ReportService } from '../services/report.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToastService } from '../services/toast.service';
 
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   data: any;
   myChartData: any;
   myChart: Chart | undefined;
-  vehicles: Vehicle[] = [];
+  vehicles: ChassisByInspectionDate[] = [];
   updateLog: VehicleUpdateLog[] = [];
   updatedVehicle = 0;
   addedVehicle = 0;
@@ -87,7 +87,7 @@ export class DashboardComponent implements OnInit {
     private toast: ToastService,
     private reportService: ReportService
   ) {
-    vehicleService.getAll().subscribe((data) => {
+    this.reportService.getChassisByInspectionDates().subscribe((data) => {
       this.vehicles.push(...data);
     });
   }
